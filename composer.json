@@ -1,0 +1,5 @@
+{
+    "name": "cherryhill/isle-st-composer-scaffold",
+    "description": "Keeps scaffolding files up to date in ISLE Site Template projects for Cherry Hill.",
+    "require": {}
+}
