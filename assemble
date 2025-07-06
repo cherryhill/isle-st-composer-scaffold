@@ -3,5 +3,4 @@
 set -euf -o pipefail
 
 # Copy files from the scaffold to the project.
-mkdir -p ./assets/scripts
-cp -a vendor/cherryhill/isle-st-composer-scaffold/scaffold/scripts .
+cp -a ./vendor/cherryhill/isle-st-composer-scaffold/scaffold/scripts ./assets
