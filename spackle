@@ -2,5 +2,5 @@
 # shellcheck shell=bash
 set -euf -o pipefail
 
-# Copy files from the scaffold to the project.
+# Copy files from the scaffold repository to the Drupal assets directory.
 cp -a ./vendor/cherryhill/isle-st-composer-scaffold/scaffold/scripts ./assets
