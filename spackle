@@ -3,4 +3,5 @@
 set -euf -o pipefail
 
 # Copy files from the scaffold repository to the Drupal assets directory.
-cp -a ./vendor/cherryhill/isle-st-composer-scaffold/scaffold/scripts ./assets
+# (rsync does not exist in the drupal-dev container, so we use cp -af)
+cp -af ./vendor/cherryhill/isle-st-composer-scaffold/scaffold/scripts ./assets

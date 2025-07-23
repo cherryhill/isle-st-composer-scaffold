@@ -17,30 +17,34 @@ PROJECT=$(grep '^COMPOSE_PROJECT_NAME=' .env | cut -d '=' -f2-)
 DATESTAMP=$(date +"%Y%m%d%H%M%S")
 
 # export the config and dump the database from within the container
-# copy the exports from the container to the host machine
-ssh "${SSH_TARGET}" "
-    cd /opt/isle && \
-    docker compose exec drupal-prod with-contenv bash -lc 'drush cache:rebuild' && \
-    docker compose exec drupal-prod with-contenv bash -lc 'drush sql:dump --result-file=/tmp/db.sql --gzip --structure-tables-key=common' && \
-    docker compose exec drupal-prod with-contenv bash -lc 'drush --yes config:export --destination=/tmp/config' && \
-    mkdir /tmp/$DATESTAMP && \
-    docker compose cp drupal-prod:/tmp/config /tmp/${DATESTAMP}/${PROJECT}-config && \
-    docker compose cp drupal-prod:/tmp/db.sql.gz /tmp/${DATESTAMP}/${PROJECT}-db.sql.gz
+# copy the backups from the container to the host machine
+ssh "$SSH_TARGET" "
+  cd /opt/isle && \
+  docker compose exec drupal-prod with-contenv bash -lc 'drush cache:rebuild' && \
+  docker compose exec drupal-prod with-contenv bash -lc 'drush sql:dump --result-file=/tmp/db.sql --gzip --structure-tables-key=common' && \
+  docker compose exec drupal-prod with-contenv bash -lc 'drush --yes config:export --destination=/tmp/config' && \
+  mkdir /tmp/$DATESTAMP && \
+  docker compose cp drupal-prod:/tmp/config /tmp/$DATESTAMP/$PROJECT-config && \
+  docker compose cp drupal-prod:/tmp/db.sql.gz /tmp/$DATESTAMP/$PROJECT-db.sql.gz
 "
 
-# copy the exports from the host machine to the local machine
-rsync -az "${SSH_TARGET}":"/tmp/${DATESTAMP}" "$(dirname "$(dirname "${BASH_SOURCE[0]}")")"/exports/
+BACKUPS_DIR=$(dirname "$(dirname "${BASH_SOURCE[0]}")")/backups
+mkdir -p "$BACKUPS_DIR"
+printf '%s\n%s' '*' '!.gitignore' > "$BACKUPS_DIR"/.gitignore
+
+# copy the backups from the host machine to the local machine
+rsync -az "$SSH_TARGET":"/tmp/$DATESTAMP" "$BACKUPS_DIR"/
 
 # copy the database dump into the local drupal-dev container
-docker compose cp "$(dirname "$(dirname "${BASH_SOURCE[0]}")")"/exports/"${DATESTAMP}"/"${PROJECT}"-db.sql.gz drupal-dev:/tmp/"${PROJECT}"-db.sql.gz
+docker compose cp "$BACKUPS_DIR"/"$DATESTAMP"/"$PROJECT"-db.sql.gz drupal-dev:/tmp/"$PROJECT"-db.sql.gz
 
-# use double quotes to expand the variable before passing it to the container
 # decompress the gzip file first to avoid issues with `drush sql:query`
-docker compose exec drupal-dev with-contenv bash -lc "gzip -df /tmp/${PROJECT}-db.sql.gz"
-docker compose exec drupal-dev with-contenv bash -lc "drush sql:query --file=/tmp/${PROJECT}-db.sql"
+# (using double quotes to expand the variables before passing them to the container)
+docker compose exec drupal-dev with-contenv bash -lc "gzip -df /tmp/$PROJECT-db.sql.gz"
+docker compose exec drupal-dev with-contenv bash -lc "drush sql:query --file=/tmp/$PROJECT-db.sql"
 
-docker compose exec drupal-dev with-contenv bash -lc "if drush list | grep -q config-split; then drush --yes config-split:import dev; fi"
-docker compose exec drupal-dev with-contenv bash -lc "drush --yes config:export"
+docker compose exec drupal-dev with-contenv bash -lc 'if drush list | grep -q config-split; then drush --yes config-split:import dev; fi'
+docker compose exec drupal-dev with-contenv bash -lc 'drush --yes config:export'
 
 docker compose exec drupal-dev with-contenv bash -lc 'drush cache:rebuild'
 docker compose exec drupal-dev with-contenv bash -lc 'drush user:login admin/reports/status'

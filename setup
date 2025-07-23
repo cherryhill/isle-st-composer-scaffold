@@ -3,6 +3,7 @@
 set -e -o pipefail
 
 # Merge the scaffold configuration into the project’s composer.json
+# `bash -s` means read from stdin; `-f <file>` is passed to the merge script
 curl -LsSf https://raw.githubusercontent.com/cherryhill/edit-composer-json/2.x/merge | bash -s -f drupal/rootfs/var/www/drupal/composer.json cherryhill/isle-st-composer-scaffold@2.x
 
 # Create scripts directory
