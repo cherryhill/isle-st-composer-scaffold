@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+# shellcheck shell=bash
+set -euf -o pipefail
+
+# Run the spackle script inside the container.
+docker compose exec drupal-dev ./vendor/cherryhill/isle-st-composer-scaffold/spackle
+
+# Ensure the scripts directory exists.
+mkdir -p drupal/rootfs/var/www/drupal/assets/scripts
+
+# Create symbolic link if it doesn’t exist or points elsewhere.
+if [ ! -L scripts ] || [ "$(readlink scripts)" != "drupal/rootfs/var/www/drupal/assets/scripts" ]; then
+  rm -rf scripts
+  ln -s drupal/rootfs/var/www/drupal/assets/scripts scripts
+fi

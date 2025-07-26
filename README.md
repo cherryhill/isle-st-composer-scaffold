@@ -50,10 +50,10 @@ Result:
 docker compose exec drupal-dev composer require cherryhill/isle-st-composer-scaffold:3.x-dev
 ```
 
-### Run the spackle script:
+### Run the setup script:
 
 ```bash
-docker compose exec drupal-dev composer run-script post-update-cmd
+./scripts/setup
 ```
 
 This will create an `assets/scripts` directory inside the Drupal root and a symlink to it in the project root.

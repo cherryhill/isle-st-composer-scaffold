@@ -1,15 +1,10 @@
 #!/usr/bin/env bash
+
+# THIS SCRIPT IS RUN INSIDE THE DRUPAL DEV CONTAINER AND DOES NOT HAVE ACCESS TO
+# THE HOST FILE SYSTEM.
+
 # shellcheck shell=bash
 set -euf -o pipefail
-
-# Ensure the scripts directory exists.
-mkdir -p drupal/rootfs/var/www/drupal/assets/scripts
-
-# Create symbolic link if it doesn’t exist or points elsewhere.
-if [ ! -L scripts ] || [ "$(readlink scripts)" != "drupal/rootfs/var/www/drupal/assets/scripts" ]; then
-  rm -rf scripts
-  ln -s drupal/rootfs/var/www/drupal/assets/scripts scripts
-fi
 
 # Copy files from the scaffold repository to the Drupal assets directory.
 # (rsync does not exist in the drupal-dev container, so we use cp -af)
