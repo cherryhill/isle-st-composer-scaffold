@@ -9,14 +9,13 @@ jobs:
       run:
         working-directory: /opt/isle
     steps:
-      - run: echo "BRANCH=$(git branch | grep '[*]' | cut -d ' ' -f2)" >> $GITHUB_ENV
       - run: echo "COMMIT=$(git rev-parse HEAD | cut -c 1-8)" >> $GITHUB_ENV
-      - name: Test for detached HEAD
+      - name: Test for detached HEAD & switch to default branch
         run: |
           if test -z "$(git symbolic-ref --short -q HEAD)"; then
-            echo "🚨 ALERT: The repository is in a detached HEAD state. It must be on a branch to continue."
-            exit 1
+            git switch $(git symbolic-ref --short refs/remotes/origin/HEAD | cut -d/ -f2)
           fi
+      - run: echo "BRANCH=$(git branch | grep '[*]' | cut -d' ' -f2)" >> $GITHUB_ENV
       # run git commands before the build script to self-update
       - run: git pull
       - run: echo "EXPORTFILE=/opt/isle/exports/$(date +%Y%m%dT%H%M%S)-$(echo "$BRANCH" | sed -e 's/[^A-Za-z0-9_-]/_/g')-$COMMIT" >> $GITHUB_ENV
