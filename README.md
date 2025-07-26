@@ -10,7 +10,7 @@ Use this project to keep Cherry Hill scaffolding up to date in ISLE Site Templat
 ### Add the repository
 
 ```sh
-curl -fsSL https://raw.githubusercontent.com/cherryhill/edit-composer-json/3.x/repositories | bash -s -f drupal/rootfs/var/www/drupal/composer.json cherryhill/isle-st-composer-scaffold
+curl -fsSL https://raw.githubusercontent.com/cherryhill/edit-composer-json/3.x/repositories | bash -s -- -f drupal/rootfs/var/www/drupal/composer.json cherryhill/isle-st-composer-scaffold
 ```
 
 Result:
@@ -31,7 +31,7 @@ Result:
 ### Add the script
 
 ```sh
-curl -fsSL https://raw.githubusercontent.com/cherryhill/edit-composer-json/3.x/scripts | bash -s -f drupal/rootfs/var/www/drupal/composer.json -s post-update-cmd:./vendor/cherryhill/isle-st-composer-scaffold/spackle
+curl -fsSL https://raw.githubusercontent.com/cherryhill/edit-composer-json/3.x/scripts | bash -s -- -f drupal/rootfs/var/www/drupal/composer.json -s post-update-cmd:./vendor/cherryhill/isle-st-composer-scaffold/spackle
 ```
 
 Result:
