@@ -4,17 +4,16 @@ Use this project to keep Cherry Hill scaffolding up to date in ISLE Site Templat
 
 ## Setup
 
-From the project root run the setup script:
+**Requirements:**
+- [`jq`](https://jqlang.org/download/) must be installed.
 
-```bash
-curl -fsSL https://raw.githubusercontent.com/cherryhill/isle-st-composer-scaffold/2.x/setup | bash
+### Add the repository
+
+```sh
+curl -fsSL https://raw.githubusercontent.com/cherryhill/edit-composer-json/3.x/repositories | bash -s -f drupal/rootfs/var/www/drupal/composer.json cherryhill/isle-st-composer-scaffold
 ```
 
-This will automatically:
-
-- Add this custom repository to your `composer.json`
-- Add the `post-update-cmd` script to your `composer.json`
-- Create an `assets/scripts` directory inside the Drupal root and a symlink to it in the project root
+Result:
 
 ```json
 {
@@ -27,6 +26,16 @@ This will automatically:
 }
 ```
 
+---
+
+### Add the script
+
+```sh
+curl -fsSL https://raw.githubusercontent.com/cherryhill/edit-composer-json/3.x/scripts | bash -s -f drupal/rootfs/var/www/drupal/composer.json -s post-update-cmd:./vendor/cherryhill/isle-st-composer-scaffold/spackle
+```
+
+Result:
+
 ```json
 {
     "scripts": {
@@ -34,6 +43,20 @@ This will automatically:
     }
 }
 ```
+
+### Require the 3.x branch of the project:
+
+```bash
+docker compose exec drupal-dev composer require cherryhill/isle-st-composer-scaffold:3.x-dev
+```
+
+### Run the spackle script:
+
+```bash
+docker compose exec drupal-dev composer run-script post-update-cmd
+```
+
+This will create an `assets/scripts` directory inside the Drupal root and a symlink to it in the project root.
 
 ```tree
 <project>
@@ -51,16 +74,10 @@ This will automatically:
 └── secrets/
 ```
 
-Then, require the 2.x branch of the project:
-
-```bash
-docker compose exec -T drupal-dev with-contenv bash -lc 'composer require cherryhill/isle-st-composer-scaffold:2.x-dev'
-```
-
 ## Usage
 
-Now, when `composer update` is run updated scaffold files will be moved into place:
+When `composer update` is run any updated scaffold files will be moved into place.
 
 ```bash
-docker compose exec -T drupal-dev with-contenv bash -lc 'composer update cherryhill/isle-st-composer-scaffold'
+docker compose exec drupal-dev composer update cherryhill/isle-st-composer-scaffold
 ```

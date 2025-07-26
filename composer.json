@@ -1,18 +1,5 @@
 {
     "name": "cherryhill/isle-st-composer-scaffold",
     "description": "Keeps scaffolding files up to date in ISLE Site Template projects for Cherry Hill.",
-    "require": {},
-    "extra": {
-        "root-package": {
-            "repositories": [
-                {
-                    "type": "github",
-                    "url": "https://github.com/cherryhill/isle-st-composer-scaffold"
-                }
-            ],
-            "scripts": {
-                "post-update-cmd": "./vendor/cherryhill/isle-st-composer-scaffold/spackle"
-            }
-        }
-    }
+    "require": {}
 }
